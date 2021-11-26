@@ -1,26 +1,18 @@
 ---
 - name: "Install Docker"
-  hosts: "client1"
+  hosts: {{inventory_hostname}}
+  vars:
+    inventory_hostname: client1
   tasks:
-    - name: "Install ca-certificates"
+    - name: "Install dependencies"
       apt:
-        name: ca-certificates
-        update_cache: yes
-      become: yes
-    - name: "Install curl"
-      apt:
-        name: curl
-        update_cache: yes
-      become: yes
-    - name: "Install gnupg"
-      apt:
-        name: gnupg
-        update_cache: yes
-      become: yes
-    - name: "Install lsb-release"
-      apt:
-        name: lsb-release
-        update_cache: yes
+        name: {{item}}
+        uptade_cache: yes
+      loop:
+        - ca-certificates
+        - curl
+        - gnupg
+        - lsb-release
       become: yes
     - name: "Add Docker’s official GPG key"
       shell: "curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg"
@@ -30,28 +22,47 @@
       apt:
         name: docker-ce
         update_cache: yes
-      become: yes
-    - name: "Install docker-ce-cli"
-      apt:
-        name: docker-ce-cli
-        update_cache: yes
-      become: yes
-    - name: "Install containerd.io"
-      apt:
-        name: containerd.io
-        update_cache: yes
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
       become: yes
     - name: "Start service Docker if not"
       service:
         name: docker
         state: started
       become: yes
-  tags: init
+  tags: install-docker
+  
+- name: "Install git and wget"
+  hosts: {{inventory_hostname}}
+  vars:
+    inventory_hostname: client1
+  gather_facts: yes
+  tasks:
+    - name: "Install dependencies"
+      apt:
+        name: {{item}}
+        uptade_cache: yes
+      loop:
+        - git
+        - wget
+      when: ansible_distribution == "Debian"
+  tags: install-git-wget
+  
+- name: Create site
+  hosts: {{inventory_hostname}}
+  vars:
+    inventory_hostname: client1
+  template:
+    src: "templates/index.html.j2"
+    dest: "/index.html"
+  tags: create-site
 
 - name: "Run container Apache"
   hosts: "client1"
   tasks:
     - name: "Run container"
-      shell: sudo docker run -d -p 8080:80 --name apache httpd
-  tags: run
+      shell: sudo docker run -d -p 8080:80 -v "$(pwd)"/index.html:/var/www/html:ro --name apache httpd
+  tags: run-container
 ...
