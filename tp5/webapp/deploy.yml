@@ -5,31 +5,45 @@
     - name: "Install ca-certificates"
       apt:
         name: ca-certificates
+        become: true
         update_cache: yes
+      become: true
     - name: "Install curl"
       apt:
         name: curl
+        become: true
         update_cache: yes
     - name: "Install gnupg"
       apt:
         name: gnupg
+        become: true
         update_cache: yes
     - name: "Install lsb-release"
       apt:
         name: lsb-release
+        become: true
         update_cache: yes
     - name: "Add Docker’s official GPG key"
       command:
         cmd: "curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg"
+        become: true
     - name: "Install docker-ce"
       apt:
         name: docker-ce
+        become: true
         update_cache: yes
     - name: "Install docker-ce-cli"
       apt:
         name: docker-ce-cli
+        become: true
         update_cache: yes
     - name: "Install containerd.io"
       apt:
         name: containerd.io
+        become: true
         update_cache: yes
+    - name: "Start service Docker if not"
+      service:
+        name: docker
+        become: true
+        state: started
