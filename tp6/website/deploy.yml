@@ -1,0 +1,57 @@
+---
+- name: "Install Docker"
+  hosts: "client1"
+  tasks:
+    - name: "Install ca-certificates"
+      apt:
+        name: ca-certificates
+        update_cache: yes
+      become: yes
+    - name: "Install curl"
+      apt:
+        name: curl
+        update_cache: yes
+      become: yes
+    - name: "Install gnupg"
+      apt:
+        name: gnupg
+        update_cache: yes
+      become: yes
+    - name: "Install lsb-release"
+      apt:
+        name: lsb-release
+        update_cache: yes
+      become: yes
+    - name: "Add Docker’s official GPG key"
+      shell: "curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg"
+    - name: "Set up the stable repository"
+      shell: echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    - name: "Install docker-ce"
+      apt:
+        name: docker-ce
+        update_cache: yes
+      become: yes
+    - name: "Install docker-ce-cli"
+      apt:
+        name: docker-ce-cli
+        update_cache: yes
+      become: yes
+    - name: "Install containerd.io"
+      apt:
+        name: containerd.io
+        update_cache: yes
+      become: yes
+    - name: "Start service Docker if not"
+      service:
+        name: docker
+        state: started
+      become: yes
+  tags: init
+
+- name: "Run container Apache"
+  hosts: "client1"
+  tasks:
+    - name: "Run container"
+      shell: sudo docker run -d -p 8080:80 --name apache httpd
+  tags: run
+...
