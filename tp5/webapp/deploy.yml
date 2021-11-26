@@ -1,0 +1,35 @@
+---
+- name: "Deploy Apache Container"
+  hosts: "prod"
+  tasks:
+    - name: "Install ca-certificates"
+      apt:
+        name: ca-certificates
+        update_cache: yes
+    - name: "Install curl"
+      apt:
+        name: curl
+        update_cache: yes
+    - name: "Install gnupg"
+      apt:
+        name: gnupg
+        update_cache: yes
+    - name: "Install lsb-release"
+      apt:
+        name: lsb-release
+        update_cache: yes
+    - name: "Add Docker’s official GPG key"
+      command:
+        cmd: "curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg"
+    - name: "Install docker-ce"
+      apt:
+        name: docker-ce
+        update_cache: yes
+    - name: "Install docker-ce-cli"
+      apt:
+        name: docker-ce-cli
+        update_cache: yes
+    - name: "Install containerd.io"
+      apt:
+        name: containerd.io
+        update_cache: yes

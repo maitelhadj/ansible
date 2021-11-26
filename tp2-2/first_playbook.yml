@@ -1,0 +1,50 @@
+---
+- name: "Premier Playbook"
+  hosts: "{{hostname}}"
+  vars:
+    path_file: "/home/ansible/"
+    path_directory: "/home/ansible/premier-playbook"
+  tasks:
+    - name: "Creer fichier test.yml"
+      file:
+        path: "{{path_file}}{{item}}"
+        state: "touch"
+      loop:
+        - test.yml
+        - test1.yml
+        - test2.yml
+        - test3.yml
+      register: log_create
+      tags:
+      - create
+    
+    - debug: var={{log_create.results|from_json}}
+      tags: create
+
+    - name: "Print log register"
+      debug:
+        var: item.dest
+      loop:
+        "{{ log_create.results }}"
+
+    - name: "Creer repertoire premier-playbook"
+      file:
+        path: "{{path_directory}}"
+        state: "directory"
+      tags:
+      - create
+
+    - name: "Supprimer fichier test.yml"
+      file:
+        path: "{{path_file}}test.yml"
+        state: "absent"
+      tags:
+      - delete
+
+    - name: "Supprimer repertoire premier-playbook"
+      file:
+        path: "{{path_directory}}"
+        state: "absent"
+      tags:
+      - delete
+...
