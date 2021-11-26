@@ -1,6 +1,6 @@
 ---
 - name: "Install Docker"
-  hosts: "client1"
+  hosts: "prod
   tasks:
     - name: "Install ca-certificates"
       apt:
