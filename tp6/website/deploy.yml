@@ -6,7 +6,7 @@
   tasks:
     - name: "Install dependencies"
       apt:
-        name: {{item}}
+        name: "{{item}}"
         uptade_cache: yes
       loop:
         - ca-certificates
@@ -42,7 +42,7 @@
   tasks:
     - name: "Install dependencies"
       apt:
-        name: {{item}}
+        name: "{{item}}"
         uptade_cache: yes
       loop:
         - git
