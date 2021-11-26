@@ -1,6 +1,6 @@
 ---
 - name: "Install Docker"
-  hosts: {{inventory_hostname}}
+  hosts: "{{inventory_hostname}}"
   vars:
     inventory_hostname: client1
   tasks:
@@ -35,7 +35,7 @@
   tags: install-docker
   
 - name: "Install git and wget"
-  hosts: {{inventory_hostname}}
+  hosts: "{{inventory_hostname}}"
   vars:
     inventory_hostname: client1
   gather_facts: yes
@@ -51,7 +51,7 @@
   tags: install-git-wget
   
 - name: Create site
-  hosts: {{inventory_hostname}}
+  hosts: "{{inventory_hostname}}"
   vars:
     inventory_hostname: client1
   template:
