@@ -23,9 +23,7 @@
         update_cache: yes
       become: yes
     - name: "Add Docker’s official GPG key"
-      command:
-        cmd: "curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg"
-      become: yes
+      shell: "curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg"
     - name: "Install docker-ce"
       apt:
         name: docker-ce
