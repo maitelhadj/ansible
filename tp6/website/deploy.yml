@@ -1,12 +1,12 @@
 ---
-- name: "Install Docker"
-  hosts: "{{inventory_hostname}}"
+- name: Install Docker
+  hosts: {{inventory_hostname}}
   vars:
     inventory_hostname: client1
   tasks:
-    - name: "Install dependencies"
+    - name: Install dependencies for Docker
       apt:
-        name: "{{item}}"
+        name: {{item}}
         uptade_cache: yes
       loop:
         - ca-certificates
@@ -14,33 +14,25 @@
         - gnupg
         - lsb-release
       become: yes
-    - name: "Add Docker’s official GPG key"
-      shell: "curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg"
-    - name: "Set up the stable repository"
-      shell: echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-    - name: "Install docker-ce"
+    - name: Add Docker’s official GPG key
+      shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    - name: Set up the stable repository
+      shell: echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    - name: Install Docker
       apt:
-        name: docker-ce
+        name: docker
         update_cache: yes
       loop:
         - docker-ce
         - docker-ce-cli
         - containerd.io
       become: yes
-    - name: "Start service Docker if not"
+    - name: Start service Docker if not
       service:
         name: docker
         state: started
       become: yes
-  tags: install-docker
-  
-- name: "Install git and wget"
-  hosts: "{{inventory_hostname}}"
-  vars:
-    inventory_hostname: client1
-  gather_facts: yes
-  tasks:
-    - name: "Install dependencies"
+    - name: Install Git and WGet if Debian Machine
       apt:
         name: "{{item}}"
         uptade_cache: yes
@@ -48,21 +40,10 @@
         - git
         - wget
       when: ansible_distribution == "Debian"
-  tags: install-git-wget
-  
-- name: "Create site"
-  hosts: "{{inventory_hostname}}"
-  vars:
-    inventory_hostname: client1
-  template:
-    src: "templates/index.html.j2"
-    dest: "/index.html"
-  tags: create-site
-
-- name: "Run container Apache"
-  hosts: "client1"
-  tasks:
-    - name: "Run container"
-      shell: sudo docker run -d -p 8080:80 -v "$(pwd)"/index.html:/var/www/html:ro --name apache httpd
-  tags: run-container
+    - name: Templating site
+      template:
+        src: "templates/index.html.j2"
+        dest: "/index.html"
+    - name: Run Apache container with the site templated
+      shell: sudo docker run -d -p 8080:80 -v "$(pwd)"/index.html:/usr/local/apache2/htdocs/index.html --name apache httpd
 ...
