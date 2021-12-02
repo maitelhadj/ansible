@@ -50,7 +50,7 @@
       when: ansible_distribution == "Debian"
   tags: install-git-wget
   
-- name: Create site
+- name: "Create site"
   hosts: "{{inventory_hostname}}"
   vars:
     inventory_hostname: client1
